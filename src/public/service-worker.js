@@ -1,80 +1,83 @@
 const CACHE_NAME = 'streamflix-v1';
 
-// We will try to cache these, but we won't fail installation if some are missing
-const PRECACHE_URLS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon.svg'
-];
-
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   
   event.waitUntil(
     (async () => {
-      const cache = await caches.open(CACHE_NAME);
-      console.log('[SW] Installing and pre-caching...');
-      
-      // Attempt to cache all files, but don't throw if one fails
-      // This prevents the "TypeError: ServiceWorker script encountered an error during installation"
-      // which happens if cache.addAll() hits a 404
-      const promises = PRECACHE_URLS.map(async (url) => {
-        try {
-          const request = new Request(url, { cache: 'no-cache' });
-          const response = await fetch(request);
-          if (response.ok) {
-            await cache.put(url, response);
-          } else {
-            console.warn(`[SW] Failed to cache ${url}: ${response.status}`);
-          }
-        } catch (error) {
-          console.warn(`[SW] Fetch failed for ${url}:`, error);
-        }
-      });
+      try {
+        const cache = await caches.open(CACHE_NAME);
+        console.log('[SW] Cache opened');
 
-      await Promise.all(promises);
-      console.log('[SW] Install complete');
+        // Critical assets only. 
+        // We use individual fetch calls to ensure one failure doesn't break the entire install.
+        const urlsToCache = ['/', '/manifest.json'];
+        
+        for (const url of urlsToCache) {
+          try {
+            const response = await fetch(url);
+            if (response.ok) {
+              await cache.put(url, response);
+              console.log(`[SW] Cached: ${url}`);
+            } else {
+              console.warn(`[SW] Failed to fetch ${url}: ${response.status}`);
+            }
+          } catch (err) {
+            console.warn(`[SW] Fetch error for ${url}:`, err);
+            // We intentionally swallow the error so installation succeeds
+          }
+        }
+      } catch (error) {
+        console.error('[SW] Critical error during install:', error);
+      }
     })()
   );
 });
 
 self.addEventListener('activate', (event) => {
+  console.log('[SW] Activated');
   event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
+  // Only handle http/https requests
+  if (!event.request.url.startsWith('http')) return;
 
-  // Navigation: Network First, Fallback to Cache
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request)
-        .catch(() => {
-          return caches.match('/')
-            .then(res => res || caches.match('/index.html'));
-        })
-    );
-    return;
-  }
+  event.respondWith(
+    (async () => {
+      try {
+        // 1. Try cache
+        const cachedResponse = await caches.match(event.request);
+        if (cachedResponse) {
+          return cachedResponse;
+        }
 
-  // Assets: Cache First
-  // We check for common asset extensions or paths
-  if (
-    url.pathname.startsWith('/assets/') || 
-    url.pathname.match(/\.(js|css|png|jpg|jpeg|svg|json|ico)$/)
-  ) {
-    event.respondWith(
-      caches.match(event.request).then((cached) => {
-        return cached || fetch(event.request).then((response) => {
-          // Verify valid response before caching
-          if (response && response.status === 200 && response.type === 'basic') {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        // 2. Network
+        const response = await fetch(event.request);
+        
+        // 3. Cache valid responses for static assets (optional enhancement)
+        // We clone the response because it can only be consumed once
+        if (response && response.status === 200 && event.request.method === 'GET') {
+          const url = new URL(event.request.url);
+          // Simple heuristic: Cache images, scripts, styles
+          if (url.pathname.match(/\.(js|css|png|jpg|jpeg|svg|ico|json)$/)) {
+             const responseToCache = response.clone();
+             caches.open(CACHE_NAME).then(cache => {
+               cache.put(event.request, responseToCache).catch(err => console.warn('[SW] Cache put failed', err));
+             });
           }
-          return response;
-        });
-      })
-    );
-  }
+        }
+        
+        return response;
+      } catch (error) {
+        // Offline fallback for navigation
+        if (event.request.mode === 'navigate') {
+          const cache = await caches.open(CACHE_NAME);
+          const cachedIndex = await cache.match('/');
+          if (cachedIndex) return cachedIndex;
+        }
+        throw error;
+      }
+    })()
+  );
 });
