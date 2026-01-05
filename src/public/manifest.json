@@ -1,13 +1,20 @@
 {
   "name": "StreamFlix",
   "short_name": "StreamFlix",
-  "start_url": ".",
+  "id": "/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
   "orientation": "portrait",
-  "scope": ".",
+  "scope": "/",
   "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
     {
       "src": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=192&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
       "sizes": "192x192",

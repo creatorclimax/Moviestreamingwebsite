@@ -1,7 +1,8 @@
 const CACHE_NAME = 'streamflix-v1';
 const urlsToCache = [
-  './',
-  './manifest.json'
+  '/',
+  '/manifest.json',
+  '/icon.svg'
 ];
 
 self.addEventListener('install', (event) => {
