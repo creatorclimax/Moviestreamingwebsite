@@ -99,18 +99,25 @@ export default function SettingsPage() {
     }
   };
 
-  const handleInstallClick = () => {
+  const handleInstallClick = async () => {
     if (!installPrompt) {
       toast.info('Installation not available. Open in Chrome/Edge or Add to Home Screen manually.');
       return;
     }
-    installPrompt.prompt();
-    installPrompt.userChoice.then((choiceResult: any) => {
+    
+    try {
+      await installPrompt.prompt();
+      const choiceResult = await installPrompt.userChoice;
       if (choiceResult.outcome === 'accepted') {
         toast.success('App installation started');
+      } else {
+        toast.info('Installation cancelled');
       }
-      setInstallPrompt?.(null);
-    });
+      setInstallPrompt(null);
+    } catch (err) {
+      console.error('Install prompt failed:', err);
+      toast.error('Failed to open install prompt');
+    }
   };
 
   const handleClearData = () => {
