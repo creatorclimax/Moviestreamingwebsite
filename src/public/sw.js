@@ -1,14 +1,11 @@
-const CACHE_NAME = 'streamflix-runtime-v1';
+const CACHE_NAME = 'streamflix-final-v1';
 
 // -----------------------------------------------------------------------------
 // INSTALL PHASE: DO NOTHING
 // -----------------------------------------------------------------------------
-// We intentionally do NOT cache anything during the 'install' phase.
-// This guarantees that the Service Worker registration will NEVER fail due to
-// network errors, 404s, or quota limits during the critical install step.
 self.addEventListener('install', (event) => {
   self.skipWaiting();
-  console.log('[SW] Install event complete (Skipping precache to ensure registration)');
+  console.log('[SW] Install event complete (Skipping precache)');
 });
 
 // -----------------------------------------------------------------------------
@@ -29,11 +26,6 @@ self.addEventListener('fetch', (event) => {
 
   // 2. Browser default for navigation (HTML) to ensure freshness
   if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match(event.request);
-      })
-    );
     return;
   }
 
