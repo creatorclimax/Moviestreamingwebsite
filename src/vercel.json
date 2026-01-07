@@ -1,23 +1,16 @@
 {
+  "rewrites": [
+    { "source": "/service-worker.js", "destination": "/service-worker.js" },
+    { "source": "/manifest.json", "destination": "/manifest.json" },
+    { "source": "/((?!api/.*|.*\\..*).*)", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/service-worker.js",
       "headers": [
-        { "key": "Content-Type", "value": "application/javascript; charset=utf-8" },
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" },
         { "key": "Service-Worker-Allowed", "value": "/" }
       ]
-    },
-    {
-      "source": "/manifest.json",
-      "headers": [
-        { "key": "Content-Type", "value": "application/manifest+json" },
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
-      ]
     }
-  ],
-  "rewrites": [
-    { "source": "/service-worker.js", "destination": "/service-worker.js" },
-    { "source": "/((?!api/.*|.*\\..*).*)", "destination": "/index.html" }
   ]
 }
