@@ -6,35 +6,25 @@ import path from 'path';
 export default defineConfig({
   plugins: [
     react(),
-
     VitePWA({
       registerType: 'autoUpdate',
-
-      includeAssets: [
-        'favicon.ico',
-        'apple-touch-icon.png',
-        'mask-icon.svg',
-      ],
-
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'Movie Streaming App',
-        short_name: 'Movies',
+        name: 'StreamFlix',
+        short_name: 'StreamFlix',
         description: 'Stream movies and shows',
-        theme_color: '#000000',
-        background_color: '#000000',
-        display: 'standalone',
         start_url: '/',
         scope: '/',
+        display: 'standalone',
+        background_color: '#000000',
+        theme_color: '#000000',
+        orientation: 'portrait',
         icons: [
           {
             src: '/pwa-192x192.png',
             sizes: '192x192',
             type: 'image/png',
-          },
-          {
-            src: '/pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
+            purpose: 'any maskable',
           },
           {
             src: '/pwa-512x512.png',
@@ -44,7 +34,6 @@ export default defineConfig({
           },
         ],
       },
-
       workbox: {
         cleanupOutdatedCaches: true,
         clientsClaim: true,
@@ -52,7 +41,6 @@ export default defineConfig({
       },
     }),
   ],
-
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
@@ -98,12 +86,10 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-
   build: {
     target: 'esnext',
     outDir: 'build',
   },
-
   server: {
     port: 3000,
     open: true,
