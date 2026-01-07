@@ -1,27 +1,26 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 
+type BrowserType = 'chrome' | 'samsung' | 'firefox' | 'other';
+
 export default function PWAInstallChecker() {
-  const [installable, setInstallable] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [browser, setBrowser] = useState<'chrome' | 'samsung' | 'firefox' | 'other'>('other');
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [browser, setBrowser] = useState<BrowserType>('other');
 
   useEffect(() => {
-    // Detect browser
     const ua = navigator.userAgent;
-    if (/Chrome/i.test(ua)) setBrowser('chrome');
-    else if (/SamsungBrowser/i.test(ua)) setBrowser('samsung');
+
+    if (/SamsungBrowser/i.test(ua)) setBrowser('samsung');
     else if (/Firefox/i.test(ua)) setBrowser('firefox');
+    else if (/Chrome/i.test(ua)) setBrowser('chrome');
+    else setBrowser('other');
 
-    // Listen for beforeinstallprompt
-    const handler = (e: Event) => {
+    const handler = (e: any) => {
       e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setInstallable(true);
+      setDeferredPrompt(e);
+      console.log('beforeinstallprompt captured');
     };
-    window.addEventListener('beforeinstallprompt', handler);
 
+    window.addEventListener('beforeinstallprompt', handler);
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
@@ -29,31 +28,48 @@ export default function PWAInstallChecker() {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const choice = await deferredPrompt.userChoice;
-      if (choice.outcome === 'accepted') alert('PWA installed successfully');
-      else alert('Installation cancelled');
+      console.log('Install choice:', choice.outcome);
       setDeferredPrompt(null);
+      return;
+    }
+
+    if (browser === 'samsung') {
+      alert('Tap the menu (≡) and choose "Add page to Home screen" to install.');
+    } else if (browser === 'firefox') {
+      alert('Open browser menu and tap "Install" or "Add to Home screen".');
     } else {
-      switch (browser) {
-        case 'samsung':
-          alert('On Samsung Internet, open the menu and tap "Add to Home Screen" to install this app.');
-          break;
-        case 'firefox':
-          alert('On Firefox, use the browser menu "Add to Home Screen" to install this app.');
-          break;
-        default:
-          alert('PWA installation is not available in this browser. Use the browser menu "Add to Home Screen".');
-      }
+      alert('Open browser menu and choose "Add to Home screen" to install.');
     }
   };
 
-  if (!installable && browser === 'chrome') return null; // Chrome will show the default prompt anyway
-
   return (
-    <div className="fixed bottom-4 right-4 bg-[var(--card)] p-4 rounded-lg border border-[var(--border)] shadow-lg z-50">
-      <p className="mb-2 text-sm text-[var(--muted-foreground)]">Install StreamFlix for a better experience.</p>
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 16,
+        right: 16,
+        zIndex: 9999,
+        background: '#111',
+        color: '#fff',
+        padding: '12px 14px',
+        borderRadius: 10,
+        boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+      }}
+    >
+      <div style={{ fontSize: 13, marginBottom: 6 }}>
+        Install StreamFlix App
+      </div>
+
       <button
         onClick={handleInstall}
-        className="px-4 py-2 bg-[var(--brand-primary)] text-white rounded-lg hover:opacity-90 transition"
+        style={{
+          background: '#e50914',
+          border: 'none',
+          padding: '6px 14px',
+          borderRadius: 6,
+          color: '#fff',
+          cursor: 'pointer',
+        }}
       >
         Install
       </button>
