@@ -5,6 +5,7 @@ import Navigation from '../navigation/Navigation';
 import { getBrandingConfig, getThemeStyles, DEFAULT_BRANDING } from '../../lib/tenant';
 import { BrandingConfig } from '../../lib/types';
 import { fetchLibrary } from '../../lib/utils';
+import PWAInstallChecker from '../PWAInstallChecker';
 import '../../styles/globals.css';
 
 export default function RootLayout() {
@@ -227,6 +228,8 @@ export default function RootLayout() {
           </div>
         </div>
       </footer>
+        {/* PWA Install floating button */}
+    <PWAInstallChecker />
     </div>
   );
 }
