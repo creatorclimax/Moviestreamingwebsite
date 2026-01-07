@@ -6,19 +6,27 @@ import { clearLibrary } from '@/lib/utils';
 
 export default function SettingsContent() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isInstallable, setIsInstallable] = useState(false);
+  const [isIos, setIsIos] = useState(false);
 
-  // Listen for the PWA install prompt
+  // Detect PWA installability
   useEffect(() => {
+    // iOS detection
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    setIsIos(/iphone|ipad|ipod/.test(userAgent));
+
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
+      setIsInstallable(true);
     };
+
     window.addEventListener('beforeinstallprompt', handler);
 
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
-  // Clear library handler
+  // Clear library
   const handleClearLibrary = () => {
     if (
       confirm(
@@ -31,23 +39,25 @@ export default function SettingsContent() {
     }
   };
 
-  // PWA install handler
+  // Install PWA
   const handleInstallPWA = async () => {
+    if (isIos) {
+      alert('To install this app on iOS, tap the Share button in Safari and select "Add to Home Screen".');
+      return;
+    }
+
     if (!deferredPrompt) {
       alert('PWA installation is not available on this device/browser');
       return;
     }
 
-    deferredPrompt.prompt(); // Show the native install prompt
+    deferredPrompt.prompt();
     const choiceResult = await deferredPrompt.userChoice;
+    if (choiceResult.outcome === 'accepted') console.log('PWA installed');
+    else console.log('PWA installation dismissed');
 
-    if (choiceResult.outcome === 'accepted') {
-      console.log('PWA installed');
-    } else {
-      console.log('PWA installation dismissed');
-    }
-
-    setDeferredPrompt(null); // Clear the saved prompt
+    setDeferredPrompt(null);
+    setIsInstallable(false);
   };
 
   return (
@@ -78,12 +88,13 @@ export default function SettingsContent() {
             <div className="flex-1">
               <h3 className="text-lg mb-2">Install as App</h3>
               <p className="text-sm text-[var(--muted-foreground)]">
-                Install this website as a Progressive Web App for a better experience and offline access.
+                Install this website as a Progressive Web App for access and a native app experience.
+                {isIos && ' On iOS, use the Share → Add to Home Screen option.'}
               </p>
             </div>
             <button
               onClick={handleInstallPWA}
-              disabled={!deferredPrompt} // Optional: disable if not installable
+              disabled={!isInstallable && !isIos}
               className="ml-4 flex items-center gap-2 px-4 py-2 bg-[var(--brand-primary)] hover:opacity-90 transition rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className="w-4 h-4" />
