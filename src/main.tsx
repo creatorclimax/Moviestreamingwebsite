@@ -4,16 +4,19 @@ import App from './App';
 import './styles/globals.css';
 
 // Service Worker Registration
-if ('serviceWorker' in navigator && !window.location.host.includes('localhost')) {
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js').then(
-      (registration) => {
+    // Determine the path based on environment
+    // In production (Vercel), it's at root.
+    const swUrl = '/service-worker.js';
+    
+    navigator.serviceWorker.register(swUrl)
+      .then((registration) => {
         console.log('ServiceWorker registration successful with scope: ', registration.scope);
-      },
-      (err) => {
-        console.log('ServiceWorker registration failed: ', err);
-      }
-    );
+      })
+      .catch((err) => {
+        console.error('ServiceWorker registration failed: ', err);
+      });
   });
 }
 
