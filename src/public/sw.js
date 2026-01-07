@@ -3,14 +3,14 @@
 
 self.addEventListener('install', (event) => {
   // Force immediate activation
-  self.skipWaiting();
-  console.log('[SW] Service Worker Installed');
+  // event.waitUntil() ensures the browser doesn't terminate the worker
+  // before the promise resolves.
+  event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener('activate', (event) => {
   // Claim clients immediately so the page is controlled
   event.waitUntil(self.clients.claim());
-  console.log('[SW] Service Worker Activated');
 });
 
 // Note: Fetch listener removed temporarily to isolate the installation error.
