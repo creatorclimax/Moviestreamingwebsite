@@ -1,19 +1,53 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Trash2, Download } from 'lucide-react';
 import { clearLibrary } from '@/lib/utils';
 
 export default function SettingsContent() {
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+
+  // Listen for the PWA install prompt
+  useEffect(() => {
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  // Clear library handler
   const handleClearLibrary = () => {
-    if (confirm('Are you sure you want to clear your entire library? This will remove all watchlist items, favorites, and watch history.')) {
+    if (
+      confirm(
+        'Are you sure you want to clear your entire library? This will remove all watchlist items, favorites, and watch history.'
+      )
+    ) {
       clearLibrary();
       alert('Library cleared successfully');
       window.location.reload();
     }
   };
 
-  const handleInstallPWA = () => {
-    alert('PWA installation feature coming soon!');
+  // PWA install handler
+  const handleInstallPWA = async () => {
+    if (!deferredPrompt) {
+      alert('PWA installation is not available on this device/browser');
+      return;
+    }
+
+    deferredPrompt.prompt(); // Show the native install prompt
+    const choiceResult = await deferredPrompt.userChoice;
+
+    if (choiceResult.outcome === 'accepted') {
+      console.log('PWA installed');
+    } else {
+      console.log('PWA installation dismissed');
+    }
+
+    setDeferredPrompt(null); // Clear the saved prompt
   };
 
   return (
@@ -49,7 +83,8 @@ export default function SettingsContent() {
             </div>
             <button
               onClick={handleInstallPWA}
-              className="ml-4 flex items-center gap-2 px-4 py-2 bg-[var(--brand-primary)] hover:opacity-90 transition rounded-lg"
+              disabled={!deferredPrompt} // Optional: disable if not installable
+              className="ml-4 flex items-center gap-2 px-4 py-2 bg-[var(--brand-primary)] hover:opacity-90 transition rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className="w-4 h-4" />
               <span>Install</span>
