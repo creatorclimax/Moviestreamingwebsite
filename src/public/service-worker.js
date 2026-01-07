@@ -1,82 +1,61 @@
-const CACHE_NAME = 'streamflix-v2';
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.4.1/workbox-sw.js');
 
-self.addEventListener('install', (event) => {
-  // Skip waiting to ensure the new service worker activates immediately
+if (workbox) {
+  console.log(`[ServiceWorker] Workbox loaded`);
+
+  // 1. Force activation (from your example)
   self.skipWaiting();
-});
+  workbox.core.clientsClaim();
 
-self.addEventListener('activate', (event) => {
-  // Claim clients immediately so the controller is active on the first load
-  event.waitUntil(
-    Promise.all([
-      self.clients.claim(),
-      // Clean up old caches
-      caches.keys().then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => {
-            if (cacheName !== CACHE_NAME) {
-              return caches.delete(cacheName);
-            }
-          })
-        );
-      }),
-    ])
+  // 2. Handle Navigation (HTML) -> Network First
+  // Matches your example's logic for the root route, but applies to all navigation
+  workbox.routing.registerRoute(
+    ({ request }) => request.mode === 'navigate',
+    new workbox.strategies.NetworkFirst({
+      cacheName: 'pages-cache',
+      plugins: [
+        new workbox.expiration.ExpirationPlugin({
+          maxEntries: 50,
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+        }),
+      ],
+    })
   );
-});
 
-self.addEventListener('fetch', (event) => {
-  const { request } = event;
+  // 3. Handle Assets (JS/CSS) -> Stale While Revalidate
+  // This is better than NetworkOnly for performance
+  workbox.routing.registerRoute(
+    ({ request }) =>
+      request.destination === 'style' ||
+      request.destination === 'script' ||
+      request.destination === 'worker',
+    new workbox.strategies.StaleWhileRevalidate({
+      cacheName: 'assets-cache',
+      plugins: [
+        new workbox.cacheableResponse.CacheableResponsePlugin({
+          statuses: [0, 200],
+        }),
+      ],
+    })
+  );
 
-  // Ignore non-http requests (like chrome-extension://)
-  if (!request.url.startsWith('http')) return;
+  // 4. Handle Images -> Cache First
+  workbox.routing.registerRoute(
+    ({ request }) => request.destination === 'image',
+    new workbox.strategies.CacheFirst({
+      cacheName: 'images-cache',
+      plugins: [
+        new workbox.expiration.ExpirationPlugin({
+          maxEntries: 60,
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+        }),
+      ],
+    })
+  );
 
-  // 1. Navigation (HTML) -> Network First
-  // Try network first to get the latest content. If offline, fall back to cache.
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Clone the response because it can only be consumed once
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-          return response;
-        })
-        .catch(() => {
-          return caches.match(request);
-        })
-    );
-    return;
-  }
+  // 5. Fallback logic (from your example)
+  // If anything fails, we could serve a fallback, but NetworkFirst/StaleWhileRevalidate handles most cases.
 
-  // 2. Assets (CSS/JS/Images) -> Stale While Revalidate
-  // Serve from cache immediately if available, but update the cache in the background.
-  if (
-    request.destination === 'style' ||
-    request.destination === 'script' ||
-    request.destination === 'image' ||
-    request.destination === 'font'
-  ) {
-    event.respondWith(
-      caches.match(request).then((cachedResponse) => {
-        const networkFetch = fetch(request)
-          .then((response) => {
-            if (response.ok) {
-              const clone = response.clone();
-              caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-            }
-            return response;
-          })
-          .catch(() => {
-            // Network failed, nothing to do (cached response already returned if available)
-          });
-
-        // Return cached response if available, otherwise wait for network
-        return cachedResponse || networkFetch;
-      })
-    );
-    return;
-  }
-
-  // Default: Network Only for everything else (API calls, etc.)
-  // We don't call respondWith, letting the browser handle it normally.
-});
+} else {
+  console.log(`[ServiceWorker] Workbox failed to load`);
+}
