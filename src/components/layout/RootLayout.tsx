@@ -60,7 +60,7 @@ export default function RootLayout() {
       const registerSW = () => {
         // Use absolute path for SW to ensure it works from any route (e.g. /settings)
         // This assumes the app is hosted at the domain root, which is true for Figma previews.
-        const swUrl = '/sw.js';
+        const swUrl = '/service-worker.js';
 
         navigator.serviceWorker.register(swUrl, { scope: '/' })
           .then((registration) => {
