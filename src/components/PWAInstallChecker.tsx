@@ -2,10 +2,35 @@ import { useEffect, useState } from 'react';
 
 type BrowserType = 'chrome' | 'samsung' | 'firefox' | 'other';
 
+type Branding = {
+  brandName: string;
+  primaryColor: string;
+};
+
 export default function PWAInstallChecker() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [browser, setBrowser] = useState<BrowserType>('other');
+  const [branding, setBranding] = useState<Branding>({
+    brandName: 'App',
+    primaryColor: '#2563eb',
+  });
 
+  // load branding.json
+  useEffect(() => {
+    fetch('/branding.json')
+      .then(res => res.json())
+      .then(data => {
+        if (data?.brandName) {
+          setBranding({
+            brandName: data.brandName,
+            primaryColor: data.primaryColor || '#2563eb',
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // detect browser + install prompt
   useEffect(() => {
     const ua = navigator.userAgent;
 
@@ -34,7 +59,7 @@ export default function PWAInstallChecker() {
     }
 
     if (browser === 'samsung') {
-      alert('Tap the menu (≡) and choose "Add page to Home screen" to install.');
+      alert('Open browser menu and tap "Add to Home screen" to install.');
     } else if (browser === 'firefox') {
       alert('Open browser menu and tap "Install" or "Add to Home screen".');
     } else {
@@ -57,13 +82,13 @@ export default function PWAInstallChecker() {
       }}
     >
       <div style={{ fontSize: 13, marginBottom: 6 }}>
-        Install StreamFlix App
+        Install {branding.brandName} App
       </div>
 
       <button
         onClick={handleInstall}
         style={{
-          background: '#e50914',
+          background: branding.primaryColor,
           border: 'none',
           padding: '6px 14px',
           borderRadius: 6,
