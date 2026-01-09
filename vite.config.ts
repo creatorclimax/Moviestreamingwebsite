@@ -3,30 +3,20 @@ import react from '@vitejs/plugin-react-swc';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 
-
-
-// Read branding.json at build time
-const branding = JSON.parse(
-  fs.readFileSync('./public/branding.json', 'utf-8')
-);
-
 export default defineConfig({
   plugins: [
     react(),
-
     VitePWA({
       registerType: 'autoUpdate',
-      injectRegister: 'auto',
-
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: branding.brandName,
-        short_name: branding.brandName,
-        description: `${branding.brandName} App`,
-        theme_color: branding.primaryColor,
-        background_color: '#000000',
-        display: 'standalone',
+        name: 'StreamFlix',
+        short_name: 'StreamFlix',
+        description: 'Stream movies and shows',
         start_url: '/',
         scope: '/',
+        display: 'standalone',
+        background_color: '#000000',
         theme_color: '#000000',
         orientation: 'portrait',
         icons: [
