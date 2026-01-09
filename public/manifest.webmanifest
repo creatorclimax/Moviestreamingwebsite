@@ -1,10 +1,10 @@
 {
-  "name": "StreamFlix",
-  "short_name": "StreamFlix",
+  "name": "Cruisehub",
+  "short_name": "Cruisehub",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#000000",
+  "theme_color": "#F9A232",
   "orientation": "portrait",
   "scope": "/",
   "icons": [
