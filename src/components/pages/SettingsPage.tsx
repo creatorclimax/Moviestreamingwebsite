@@ -356,8 +356,8 @@ export default function SettingsPage() {
     {/* Reset Site */}
     <button
       onClick={handleResetSite}
-      className="flex items-center justify-center gap-3 p-4 rounded-xl border
-        border-red-700/40 bg-red-700/15 text-red-600 hover:bg-red-700/25 transition"
+           className="flex items-center justify-center gap-3 p-4 rounded-xl border
+        border-red-500/40 bg-red-500/10 text-red-500 hover:bg-red-500/20 transition"
     >
       <Trash2 className="w-5 h-5" />
       <div className="text-left">
