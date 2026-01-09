@@ -335,7 +335,7 @@ export default function SettingsPage() {
           window.location.href = '/';
         }
       }}
-      className="flex items-center justify-center gap-3 p-4 rounded-xl border border-red-700/40 bg-red-700/10 text-red-700 !text-red-700 hover:bg-red-700/20 transition cursor-pointer"
+     className="flex items-center justify-center gap-3 p-4 rounded-xl border border-red-500/30 bg-red-500/5 text-red-500 hover:bg-red-500/10 transition cursor-pointer"
 
     >
       <Trash2 className="w-5 h-5" />
