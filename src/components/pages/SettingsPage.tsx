@@ -344,7 +344,7 @@ export default function SettingsPage() {
     <button
       onClick={handleClearData}
       className="flex items-center justify-center gap-3 p-4 rounded-xl border
-        border-red-450/40 bg-red-450/10 text-red-450 hover:bg-red-450/20 transition"
+        border-red-400/40 bg-red-400/10 text-red-400 hover:bg-red-400/20 transition"
     >
       <Trash2 className="w-5 h-5" />
       <div className="text-left">
