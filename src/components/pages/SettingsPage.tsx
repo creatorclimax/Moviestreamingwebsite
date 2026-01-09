@@ -281,35 +281,71 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        {/* App & Data */}
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold flex items-center gap-2 text-[var(--brand-primary)]">
-            <Smartphone className="w-5 h-5" /> Application
-          </h2>
-          <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 grid gap-4 md:grid-cols-2">
-            <button
-              onClick={handleInstallClick}
-              className="flex items-center justify-center gap-3 p-4 rounded-xl border border-[var(--brand-primary)] bg-[var(--brand-primary)]/10 text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/20 cursor-pointer transition"
-            >
-              <Download className="w-5 h-5" />
-              <div className="text-left">
-                <p className="font-medium">Install App</p>
-                <p className="text-xs opacity-70">Download as PWA</p>
-              </div>
-            </button>
+     {/* App & Data */}
+<section className="space-y-4">
+  <h2 className="text-xl font-semibold flex items-center gap-2 text-[var(--brand-primary)]">
+    <Smartphone className="w-5 h-5" /> Application
+  </h2>
+  <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 grid gap-4 md:grid-cols-3">
+    
+    {/* Install App */}
+    <button
+      onClick={handleInstallClick}
+      className="flex items-center justify-center gap-3 p-4 rounded-xl border border-[var(--brand-primary)] bg-[var(--brand-primary)]/10 text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/20 cursor-pointer transition"
+    >
+      <Download className="w-5 h-5" />
+      <div className="text-left">
+        <p className="font-medium">Install App</p>
+        <p className="text-xs opacity-70">Download as PWA</p>
+      </div>
+    </button>
 
-            <button
-              onClick={handleClearData}
-              className="flex items-center justify-center gap-3 p-4 rounded-xl border border-red-500/30 bg-red-500/5 text-red-500 hover:bg-red-500/10 transition cursor-pointer"
-            >
-              <Trash2 className="w-5 h-5" />
-              <div className="text-left">
-                <p className="font-medium">Clear Library Data</p>
-                <p className="text-xs opacity-70">Delete local history & favorites</p>
-              </div>
-            </button>
-          </div>
-        </section>
+    {/* Clear Library Data */}
+    <button
+      onClick={handleClearData}
+      className="flex items-center justify-center gap-3 p-4 rounded-xl border border-red-500/30 bg-red-500/5 text-red-500 hover:bg-red-500/10 transition cursor-pointer"
+    >
+      <Trash2 className="w-5 h-5" />
+      <div className="text-left">
+        <p className="font-medium">Clear Library Data</p>
+        <p className="text-xs opacity-70">Delete local history & favorites</p>
+      </div>
+    </button>
+
+    {/* Reset Site */}
+    <button
+      onClick={async () => {
+        if (confirm('Are you sure you want to reset the site? All site data, caches, and settings will be erased.')) {
+          // Clear localStorage
+          localStorage.clear();
+
+          // Clear caches
+          if ('caches' in window) {
+            const keys = await caches.keys();
+            await Promise.all(keys.map(key => caches.delete(key)));
+          }
+
+          // Unregister service workers
+          if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(registrations.map(reg => reg.unregister()));
+          }
+
+          // Reload
+          window.location.href = '/';
+        }
+      }}
+      className="flex items-center justify-center gap-3 p-4 rounded-xl border border-red-700/40 bg-red-700/10 text-red-700 hover:bg-red-700/20 transition cursor-pointer"
+    >
+      <Trash2 className="w-5 h-5" />
+      <div className="text-left">
+        <p className="font-medium">Reset Site</p>
+        <p className="text-xs opacity-70">Erase all site data & settings</p>
+      </div>
+    </button>
+  </div>
+</section>
+
 
         {/* Info */}
         <section className="space-y-4">
