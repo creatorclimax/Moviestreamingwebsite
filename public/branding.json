@@ -1,7 +1,7 @@
 {
   "brandName": "Cruisehub",
-  "primaryColor": "hsl(33, 94%, 58%)",
-  "accentColor": "hsl(60, 100%, 50%)",
+  "primaryColor": "#ffa31a",
+  "accentColor": "#2563eb",
   "logo": "https://cruisehub.live/cruisehub-new-x.png",
   "favicon": "https://cruisehub.live/ch%202%20icon.png",
   "favicon2": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=32&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
