@@ -47,23 +47,29 @@ export default function LibraryPage() {
           <h1 className="text-5xl md:text-6xl font-bold tracking-tight">Library</h1>
           
           <button
-            onClick={() => setAuthOpen(true)}
-            className={`flex items-center !gap-4 !px-8 !py-4 transition rounded-xl text-white font-medium text-base backdrop-blur-sm border border-white/10 w-fit ${
-              session ? 'bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/20' : 'bg-white/10 hover:bg-white/20'
-            }`}
-          >
-            {session ? (
-              <>
-                <Check className="w-5 h-5 shrink-0" />
-                <span className="whitespace-nowrap">Synced</span>
-              </>
-            ) : (
-              <>
-                <RefreshCw className="w-5 h-5 shrink-0" />
-                <span className="whitespace-nowrap">Sync Account</span>
-              </>
-            )}
-          </button>
+  disabled={!!session}
+  onClick={() => {
+    if (!session) setAuthOpen(true);
+  }}
+  className={`flex items-center gap-4 px-8 py-4 transition rounded-xl font-medium text-base backdrop-blur-sm border w-fit
+    ${session
+      ? 'bg-green-500/10 text-green-400 border-green-500/20 cursor-not-allowed opacity-80'
+      : 'bg-white/10 hover:bg-white/20 text-white border-white/10 cursor-pointer'
+    }`}
+>
+  {session ? (
+    <>
+      <Check className="w-5 h-5 shrink-0" />
+      <span className="whitespace-nowrap">Synced</span>
+    </>
+  ) : (
+    <>
+      <RefreshCw className="w-5 h-5 shrink-0" />
+      <span className="whitespace-nowrap">Sync Account</span>
+    </>
+  )}
+</button>
+
         </div>
 
         <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
