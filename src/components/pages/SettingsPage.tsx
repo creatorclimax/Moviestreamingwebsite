@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link, useOutletContext } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import {
   User,
   LogOut,
@@ -35,7 +35,6 @@ export default function SettingsPage() {
   const [authOpen, setAuthOpen] = useState(false);
 
   const { installPrompt, setInstallPrompt } = useOutletContext<any>() || {};
-
   const [installed, setInstalled] = useState(false);
 
   const [settings, setSettings] = useState({
@@ -44,8 +43,6 @@ export default function SettingsPage() {
     showForYou: false,
     showHistory: false
   });
-
-  const navigate = useNavigate();
 
   /* ---------------- PWA INSTALLED CHECK ---------------- */
   useEffect(() => {
@@ -210,6 +207,72 @@ export default function SettingsPage() {
           </div>
         </section>
 
+        {/* APPEARANCE */}
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold flex items-center gap-2 text-[var(--brand-primary)]">
+            <Palette className="w-5 h-5" /> Appearance
+          </h2>
+
+          <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 space-y-6">
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {THEMES.map(t => (
+                <button
+                  key={t.id}
+                  onClick={() => updateSetting('theme', t.id)}
+                  className={`p-3 rounded-lg border flex flex-col items-center gap-2 ${
+                    settings.theme === t.id
+                      ? 'border-[var(--brand-primary)] bg-[var(--brand-primary)]/10'
+                      : 'border-[var(--border)]'
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-full" style={{ background: t.bg }} />
+                  <span className="text-xs text-center">{t.name}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-3">
+              {FONTS.map(f => (
+                <button
+                  key={f.id}
+                  onClick={() => updateSetting('font', f.id)}
+                  style={{ fontFamily: f.style }}
+                  className={`p-3 rounded-lg border text-left ${
+                    settings.font === f.id
+                      ? 'border-[var(--brand-primary)] bg-[var(--brand-primary)]/10'
+                      : 'border-[var(--border)]'
+                  }`}
+                >
+                  {f.name}
+                </button>
+              ))}
+            </div>
+
+          </div>
+        </section>
+
+        {/* HOMEPAGE */}
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold flex items-center gap-2 text-[var(--brand-primary)]">
+            <Layout className="w-5 h-5" /> Homepage Content
+          </h2>
+
+          <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl divide-y divide-[var(--border)]">
+
+            {[
+              ['Show "For You"', settings.showForYou, (v:boolean)=>updateSetting('showForYou', v)],
+              ['Show "Watch History"', settings.showHistory, (v:boolean)=>updateSetting('showHistory', v)]
+            ].map(([label,val,fn]:any, i) => (
+              <div key={i} className="p-4 flex justify-between items-center">
+                <span>{label}</span>
+                <input type="checkbox" checked={val} onChange={e=>fn(e.target.checked)} />
+              </div>
+            ))}
+
+          </div>
+        </section>
+
         {/* APPLICATION */}
         <section className="space-y-4">
           <h2 className="text-xl font-semibold flex items-center gap-2 text-[var(--brand-primary)]">
@@ -221,38 +284,45 @@ export default function SettingsPage() {
             {!installed && (
               <button
                 onClick={handleInstallClick}
-                className="flex items-center justify-center gap-3 p-4 rounded-xl border border-[var(--brand-primary)] bg-[var(--brand-primary)]/10 text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/20"
+                className="flex gap-3 items-center justify-center p-4 rounded-xl border border-[var(--brand-primary)] bg-[var(--brand-primary)]/10 text-[var(--brand-primary)]"
               >
                 <Download className="w-5 h-5" />
-                <div className="text-left">
-                  <p className="font-medium">Install App</p>
-                  <p className="text-xs opacity-70">Add to device</p>
-                </div>
+                Install App
               </button>
             )}
 
             <button
               onClick={handleClearData}
-              className="flex items-center justify-center gap-3 p-4 rounded-xl border border-red-500/30 bg-red-500/5 text-red-500 hover:bg-red-500/10"
+              className="p-4 rounded-xl border border-red-500/30 bg-red-500/5 text-red-500"
             >
-              <Trash2 className="w-5 h-5" />
-              <div className="text-left">
-                <p className="font-medium">Clear Library</p>
-                <p className="text-xs opacity-70">History & favorites</p>
-              </div>
+              Clear Library
             </button>
 
             <button
               onClick={handleResetSite}
-              className="flex items-center justify-center gap-3 p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-600 hover:bg-red-500/20"
+              className="p-4 rounded-xl border border-red-500/40 bg-red-500/10 text-red-600"
             >
-              <Trash2 className="w-5 h-5" />
-              <div className="text-left">
-                <p className="font-medium">Reset Site</p>
-                <p className="text-xs opacity-70">Everything wiped</p>
-              </div>
+              Reset Site
             </button>
 
+          </div>
+        </section>
+
+        {/* ABOUT */}
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold flex items-center gap-2 text-[var(--brand-primary)]">
+            <Info className="w-5 h-5" /> About
+          </h2>
+
+          <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 flex justify-between items-center">
+            <div>
+              <p className="font-medium">Disclaimer & Legal</p>
+              <p className="text-sm text-[var(--muted-foreground)]">Content disclaimer</p>
+            </div>
+
+            <Link to="/disclaimer" className="px-4 py-2 rounded-lg bg-[var(--muted)]">
+              View
+            </Link>
           </div>
         </section>
 
