@@ -1,44 +1,26 @@
+'use client';
 import { useEffect, useState } from 'react';
 
 type BrowserType = 'chrome' | 'samsung' | 'firefox' | 'other';
 
-type Branding = {
-  brandName: string;
-  primaryColor: string;
-};
-
 export default function PWAInstallChecker() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [browser, setBrowser] = useState<BrowserType>('other');
-  const [branding, setBranding] = useState<Branding>({
-    brandName: 'App',
-    primaryColor: '#2563eb',
-  });
+  const [installed, setInstalled] = useState(false);
 
-  // load branding.json
   useEffect(() => {
-    fetch('/branding.json')
-      .then(res => res.json())
-      .then(data => {
-        if (data?.brandName) {
-          setBranding({
-            brandName: data.brandName,
-            primaryColor: data.primaryColor || '#2563eb',
-          });
-        }
-      })
-      .catch(() => {});
-  }, []);
+    // Detect if app is already installed
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+    setInstalled(isStandalone);
 
-  // detect browser + install prompt
-  useEffect(() => {
+    // Detect browser
     const ua = navigator.userAgent;
-
     if (/SamsungBrowser/i.test(ua)) setBrowser('samsung');
     else if (/Firefox/i.test(ua)) setBrowser('firefox');
     else if (/Chrome/i.test(ua)) setBrowser('chrome');
     else setBrowser('other');
 
+    // Listen for beforeinstallprompt
     const handler = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -59,7 +41,7 @@ export default function PWAInstallChecker() {
     }
 
     if (browser === 'samsung') {
-      alert('Open browser menu and tap "Add to Home screen" to install.');
+      alert('Tap the menu (≡) and choose "Add page to Home screen" to install.');
     } else if (browser === 'firefox') {
       alert('Open browser menu and tap "Install" or "Add to Home screen".');
     } else {
@@ -67,34 +49,15 @@ export default function PWAInstallChecker() {
     }
   };
 
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: 16,
-        right: 16,
-        zIndex: 9999,
-        background: '#111',
-        color: '#fff',
-        padding: '12px 14px',
-        borderRadius: 10,
-        boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
-      }}
-    >
-      <div style={{ fontSize: 13, marginBottom: 6 }}>
-        Install {branding.brandName} App
-      </div>
+  // Hide the button if app is installed
+  if (installed) return null;
 
+  return (
+    <div className="fixed bottom-4 right-4 z-50 bg-[var(--card)] p-4 rounded-lg border border-[var(--border)] shadow-lg">
+      <p className="mb-2 text-sm text-[var(--muted-foreground)]">Install {document.title} for a better experience.</p>
       <button
         onClick={handleInstall}
-        style={{
-          background: branding.primaryColor,
-          border: 'none',
-          padding: '6px 14px',
-          borderRadius: 6,
-          color: '#fff',
-          cursor: 'pointer',
-        }}
+        className="px-4 py-2 bg-[var(--brand-primary)] text-white rounded-lg hover:opacity-90 transition"
       >
         Install
       </button>
