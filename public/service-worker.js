@@ -1,4 +1,4 @@
-const CACHE_NAME = 'streamflix-v1';
+const CACHE_NAME = 'CruishubFilx-v1';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -11,7 +11,7 @@ self.addEventListener('install', (event) => {
 
         // Critical assets only. 
         // We use individual fetch calls to ensure one failure doesn't break the entire install.
-        const urlsToCache = ['/', '/manifest.json'];
+        const urlsToCache = ['/', '/manifest.webmanifest'];
         
         for (const url of urlsToCache) {
           try {
