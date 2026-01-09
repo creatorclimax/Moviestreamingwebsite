@@ -10,14 +10,14 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'StreamFlix',
-        short_name: 'StreamFlix',
-        description: 'Stream movies and shows',
+        name: 'Cruisehub',
+        short_name: 'Cruisehub',
+        description: 'Stream and download movies',
         start_url: '/',
         scope: '/',
         display: 'standalone',
         background_color: '#000000',
-        theme_color: '#000000',
+        theme_color: '#ffa31a',
         orientation: 'portrait',
         icons: [
           {
