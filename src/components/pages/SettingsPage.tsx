@@ -289,17 +289,17 @@ export default function SettingsPage() {
   <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 grid gap-4 md:grid-cols-3">
     
     {/* Install App */}
-    <button
-      onClick={handleInstallClick}
-      className="flex items-center justify-center gap-3 p-4 rounded-xl border border-[var(--brand-primary)] bg-[var(--brand-primary)]/10 text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/20 cursor-pointer transition"
-    >
-      <Download className="w-5 h-5" />
-      <div className="text-left">
-        <p className="font-medium">Install App</p>
-        <p className="text-xs opacity-70">Download as PWA</p>
-      </div>
-    </button>
-
+    {!installed && (
+      <button
+        onClick={handleInstallClick}
+        className="flex items-center justify-center gap-3 p-4 rounded-xl border border-[var(--brand-primary)] bg-[var(--brand-primary)]/10 text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/20 cursor-pointer transition"
+      >
+        <Download className="w-5 h-5" />
+        <div className="text-left">
+          <p className="font-medium">Install App</p>
+          <p className="text-xs opacity-70">Download as PWA</p>
+        </div>
+      </button>
     {/* Clear Library Data */}
     <button
       onClick={handleClearData}
