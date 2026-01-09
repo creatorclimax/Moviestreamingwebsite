@@ -300,6 +300,7 @@ export default function SettingsPage() {
           <p className="text-xs opacity-70">Download as PWA</p>
         </div>
       </button>
+   )}
     {/* Clear Library Data */}
     <button
       onClick={handleClearData}
