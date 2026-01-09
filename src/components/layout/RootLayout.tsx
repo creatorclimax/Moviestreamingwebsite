@@ -179,7 +179,7 @@ export default function RootLayout() {
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased">
       <Helmet>
-        <link rel="manifest" href="/manifest.json" />
+        <link rel="manifest" href="/manifest.webmanifest" />
         <meta name="theme-color" content="#000000" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
