@@ -252,61 +252,123 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        {/* HOMEPAGE */}
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold flex items-center gap-2 text-[var(--brand-primary)]">
-            <Layout className="w-5 h-5" /> Homepage Content
-          </h2>
+{/* Homepage Preferences */}
+<section className="space-y-4">
+  <h2 className="text-xl font-semibold flex items-center gap-2 text-[var(--brand-primary)]">
+    <Layout className="w-5 h-5" /> Homepage Content
+  </h2>
 
-          <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl divide-y divide-[var(--border)]">
+  <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl divide-y divide-[var(--border)]">
 
-            {[
-              ['Show "For You"', settings.showForYou, (v:boolean)=>updateSetting('showForYou', v)],
-              ['Show "Watch History"', settings.showHistory, (v:boolean)=>updateSetting('showHistory', v)]
-            ].map(([label,val,fn]:any, i) => (
-              <div key={i} className="p-4 flex justify-between items-center">
-                <span>{label}</span>
-                <input type="checkbox" checked={val} onChange={e=>fn(e.target.checked)} />
-              </div>
-            ))}
+    {/* For You */}
+    <div className="p-4 flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-[var(--background)] rounded-lg">
+          <Monitor className="w-5 h-5 text-[var(--brand-primary)]" />
+        </div>
+        <div>
+          <p className="font-medium">Show "For You"</p>
+          <p className="text-xs text-[var(--muted-foreground)]">Display recommendations row</p>
+        </div>
+      </div>
 
-          </div>
-        </section>
+      <label className="relative inline-flex items-center cursor-pointer">
+        <input
+          type="checkbox"
+          checked={settings.showForYou}
+          onChange={(e) => updateSetting('showForYou', e.target.checked)}
+          className="sr-only peer"
+        />
+        <div className="w-11 h-6 bg-[var(--input)] rounded-full peer peer-checked:bg-[var(--brand-primary)]
+          after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full
+          after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full">
+        </div>
+      </label>
+    </div>
 
-        {/* APPLICATION */}
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold flex items-center gap-2 text-[var(--brand-primary)]">
-            <Smartphone className="w-5 h-5" /> Application
-          </h2>
+    {/* History */}
+    <div className="p-4 flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-[var(--background)] rounded-lg">
+          <Smartphone className="w-5 h-5 text-[var(--brand-primary)]" />
+        </div>
+        <div>
+          <p className="font-medium">Show "Watch History"</p>
+          <p className="text-xs text-[var(--muted-foreground)]">Display recent history row</p>
+        </div>
+      </div>
 
-          <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 grid gap-4 md:grid-cols-3">
+      <label className="relative inline-flex items-center cursor-pointer">
+        <input
+          type="checkbox"
+          checked={settings.showHistory}
+          onChange={(e) => updateSetting('showHistory', e.target.checked)}
+          className="sr-only peer"
+        />
+        <div className="w-11 h-6 bg-[var(--input)] rounded-full peer peer-checked:bg-[var(--brand-primary)]
+          after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full
+          after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full">
+        </div>
+      </label>
+    </div>
 
-            {!installed && (
-              <button
-                onClick={handleInstallClick}
-                className="flex gap-3 items-center justify-center p-4 rounded-xl border border-[var(--brand-primary)] bg-[var(--brand-primary)]/10 text-[var(--brand-primary)]"
-              >
-                <Download className="w-5 h-5" />
-                Install App
-              </button>
-            )}
+  </div>
+</section>
 
-            <button
-              onClick={handleClearData}
-              className="p-4 rounded-xl border border-red-500/30 bg-red-500/5 text-red-500"
-            >
-              Clear Library
-            </button>
 
-            <button
-              onClick={handleResetSite}
-              className="p-4 rounded-xl border border-red-500/40 bg-red-500/10 text-red-600"
-            >
-              Reset Site
-            </button>
+     {/* App & Data */}
+<section className="space-y-4">
+  <h2 className="text-xl font-semibold flex items-center gap-2 text-[var(--brand-primary)]">
+    <Smartphone className="w-5 h-5" /> Application
+  </h2>
 
-          </div>
-        </section>
+  <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 grid gap-4 md:grid-cols-3">
+
+    {/* Install App */}
+    {!installed && (
+      <button
+        onClick={handleInstallClick}
+        className="flex items-center justify-center gap-3 p-4 rounded-xl border
+          border-[var(--brand-primary)] bg-[var(--brand-primary)]/10
+          text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/20 transition"
+      >
+        <Download className="w-5 h-5" />
+        <div className="text-left">
+          <p className="font-medium">Install App</p>
+          <p className="text-xs opacity-70">Download as PWA</p>
+        </div>
+      </button>
+    )}
+
+    {/* Clear Library */}
+    <button
+      onClick={handleClearData}
+      className="flex items-center justify-center gap-3 p-4 rounded-xl border
+        border-red-500/40 bg-red-500/10 text-red-500 hover:bg-red-500/20 transition"
+    >
+      <Trash2 className="w-5 h-5" />
+      <div className="text-left">
+        <p className="font-medium">Clear Library</p>
+        <p className="text-xs opacity-70">Remove history & favorites</p>
+      </div>
+    </button>
+
+    {/* Reset Site */}
+    <button
+      onClick={handleResetSite}
+      className="flex items-center justify-center gap-3 p-4 rounded-xl border
+        border-red-700/40 bg-red-700/15 text-red-600 hover:bg-red-700/25 transition"
+    >
+      <Trash2 className="w-5 h-5" />
+      <div className="text-left">
+        <p className="font-medium">Reset Site</p>
+        <p className="text-xs opacity-70">Erase all data & settings</p>
+      </div>
+    </button>
+
+  </div>
+</section>
+
 
         {/* ABOUT */}
         <section className="space-y-4">
