@@ -18,7 +18,6 @@ export default function LibraryPage() {
   const [session, setSession] = useState<any>(null);
 
   /* ================= AUTH ================= */
-
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -33,7 +32,6 @@ export default function LibraryPage() {
   }, []);
 
   /* ================= TAB FROM URL ================= */
-
   useEffect(() => {
     const tab = searchParams.get('tab');
     if (tab && ['recommendations', 'favorites', 'history', 'downloads'].includes(tab)) {
@@ -47,7 +45,6 @@ export default function LibraryPage() {
   };
 
   /* ================= LOAD FROM CLOUD ON LOGIN ================= */
-
   useEffect(() => {
     if (!session?.user?.id) return;
 
@@ -75,12 +72,11 @@ export default function LibraryPage() {
   }, [session]);
 
   /* ================= SAVE TO CLOUD WHEN LIBRARY CHANGES ================= */
-
   useEffect(() => {
     if (!session?.user?.id) return;
 
     const handler = () => {
-
+      console.log('SYNC EVENT FIRED');
 
       const data = {
         favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
@@ -89,6 +85,7 @@ export default function LibraryPage() {
         recommendations: JSON.parse(localStorage.getItem('recommendations') || '[]'),
       };
 
+      console.log('SAVING TO CLOUD:', data);
       saveUserData(session.user.id, data);
     };
 
@@ -97,7 +94,6 @@ export default function LibraryPage() {
   }, [session]);
 
   /* ================= UI ================= */
-
   return (
     <div className="container mx-auto px-4 md:px-8 py-10 min-h-screen">
       <div className="flex flex-col gap-8">
