@@ -9,10 +9,7 @@ import DownloadsContent from '../library/DownloadsContent';
 import RecommendationsContent from '../library/RecommendationsContent';
 import AuthDialog from '../auth/AuthDialog';
 
-import {
-  saveUserData,
-  loadUserData,
-} from '../../lib/utils';
+import { saveUserData, loadUserData } from '../../lib/utils';
 
 export default function LibraryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -27,11 +24,10 @@ export default function LibraryPage() {
       setSession(session);
     });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+    const { data: { subscription } } =
+      supabase.auth.onAuthStateChange((_event, session) => {
+        setSession(session);
+      });
 
     return () => subscription.unsubscribe();
   }, []);
@@ -55,25 +51,27 @@ export default function LibraryPage() {
   useEffect(() => {
     if (!session?.user?.id) return;
 
-    (async () => {
+    const syncFromCloud = async () => {
       const cloudLibrary = await loadUserData(session.user.id);
 
-      if (cloudLibrary) {
-        if (cloudLibrary.favorites)
-          localStorage.setItem('favorites', JSON.stringify(cloudLibrary.favorites));
+      if (!cloudLibrary) return;
 
-        if (cloudLibrary.history)
-          localStorage.setItem('history', JSON.stringify(cloudLibrary.history));
+      if (cloudLibrary.favorites)
+        localStorage.setItem('favorites', JSON.stringify(cloudLibrary.favorites));
 
-        if (cloudLibrary.downloads)
-          localStorage.setItem('downloads', JSON.stringify(cloudLibrary.downloads));
+      if (cloudLibrary.history)
+        localStorage.setItem('history', JSON.stringify(cloudLibrary.history));
 
-        if (cloudLibrary.recommendations)
-          localStorage.setItem('recommendations', JSON.stringify(cloudLibrary.recommendations));
+      if (cloudLibrary.downloads)
+        localStorage.setItem('downloads', JSON.stringify(cloudLibrary.downloads));
 
-        window.dispatchEvent(new Event('library-updated'));
-      }
-    })();
+      if (cloudLibrary.recommendations)
+        localStorage.setItem('recommendations', JSON.stringify(cloudLibrary.recommendations));
+
+      window.dispatchEvent(new Event('library-updated'));
+    };
+
+    syncFromCloud();
   }, [session]);
 
   /* ================= SAVE TO CLOUD WHEN LIBRARY CHANGES ================= */
