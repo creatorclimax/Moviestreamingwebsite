@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { supabase } from '../utils/supabase/client';
 import { projectId } from '../utils/supabase/info';
 
 export function cn(...inputs: ClassValue[]) {
@@ -32,6 +33,41 @@ export function formatYear(dateString: string): string {
   if (!dateString) return 'N/A';
   return new Date(dateString).getFullYear().toString();
 }
+
+
+
+
+/* ================= USER SYNC ================= */
+
+export async function saveUserData(userId: string, data: any) {
+  const { error } = await supabase
+    .from('user_library')
+    .upsert({
+      id: userId,
+      library: data,
+      updated_at: new Date().toISOString(),
+    });
+
+  if (error) {
+    console.error('Save user data failed:', error);
+  }
+}
+
+export async function loadUserData(userId: string) {
+  const { data, error } = await supabase
+    .from('user_library')
+    .select('library')
+    .eq('id', userId)
+    .single();
+
+  if (error) {
+    console.error('Load user data failed:', error);
+    return null;
+  }
+
+  return data?.library || null;
+}
+
 
 export function formatVoteAverage(vote: number): string {
   return vote.toFixed(1);
