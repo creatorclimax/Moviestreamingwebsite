@@ -80,18 +80,7 @@ export default function LibraryPage() {
     if (!session?.user?.id) return;
 
     const handler = () => {
-  console.log('SYNC EVENT FIRED');
 
-  const data = {
-    favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
-    history: JSON.parse(localStorage.getItem('history') || '[]'),
-    downloads: JSON.parse(localStorage.getItem('downloads') || '[]'),
-    recommendations: JSON.parse(localStorage.getItem('recommendations') || '[]'),
-  };
-
-  console.log('SAVING TO CLOUD:', data);
-  saveUserData(session.user.id, data);
-};
 
       const data = {
         favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
